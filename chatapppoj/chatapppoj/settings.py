@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'chatapp',
     'channels',
     'rest_framework',
-    'corsheraders',
+    'corsheaders',
     'rest_framework_simplejwt',
 ]
 
@@ -95,9 +95,9 @@ SIMPLE_JWT = {
 }
 
 #cors Headers 
-CORS_ALLOWED_ORIGINS = {
+CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173'
-}
+]
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 

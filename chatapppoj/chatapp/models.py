@@ -10,8 +10,8 @@ class ConverstaionManager(models.Manager):
             Prefetch('participants',queryset=User.objects.only('id','username'))
         )
     
-class Conservation(models.Model):
-    participants = models.ManyToManyField(User,related_name='conservations')
+class Conversation(models.Model):
+    participants = models.ManyToManyField(User,related_name='Conversations')
     created_at = models.DateTimeField(auto_now_add=True)
     objects = ConverstaionManager()
 
@@ -19,7 +19,7 @@ class Conservation(models.Model):
         return "Conversation with : " + " , ".join([user.username for user in self.participants.all()])
 
 class Message (models.Model):
-    converstaion = models.ForeignKey(Conservation,on_delete=models.CASCADE,related_name='messages')
+    converstaion = models.ForeignKey(Conversation,on_delete=models.CASCADE,related_name='messages')
     sender = models.ForeignKey(User,on_delete=models.CASCADE,related_name='sent_messages')
     content = models.TextField()
     

@@ -75,19 +75,20 @@ WSGI_APPLICATION = 'chatapppoj.wsgi.application'
 ASGI_APPLICATION = 'chatapppoj.asgi.application'
 
 CHANNEL_LAYERS = {
-    'default' : {
-        'BACKEND' :'channels_redis.cors.RedisChannelLayer',
-        'CONFIG':{
-            'hosts' : [('127.0.0.1',6479)]
-        }
-    }
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
+    },
 }
+
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES':{
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        
-    }
+    ],
 }
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME":timedelta(days=1),

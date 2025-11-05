@@ -1,103 +1,140 @@
-# ChatApp (Django + Channels + React)
+# 🗨️ ChatApp (Django + Channels + React)
 
-A real-time 1:1 chat application with JWT auth, REST APIs, and WebSocket messaging.
+A **real-time 1-to-1 chat application** built with **Django**, **Django REST Framework**, **Channels (WebSockets)**, and **React (Vite)** — featuring **JWT authentication**, REST APIs, and **Redis-backed real-time messaging**.
 
-- Backend: Django 5, Django REST Framework, Channels (WebSockets), channels-redis, Simple JWT, CORS Headers
-- Frontend: React (Vite)
-- Realtime transport: Redis-backed channel layer
+---
 
-## Features
-- **JWT Authentication** (login, refresh)
-- **User management** (register, list users)
-- **Conversations** (create between two users, list)
-- **Messages** (list, create, delete own)
-- **Realtime chat** over WebSockets with typing indicator and online presence
+## 🚀 Tech Stack
 
-## Project Structure
-- **chatapppoj/** Django project root
-  - `manage.py`
-  - `chatapppoj/` project settings, ASGI, routing
-  - `chatapp/` Django app (models, serializers, views, consumers, urls, routing)
-  - `db.sqlite3` (development database; do not commit)
-- **frontend/** React app (Vite)
-  - `src/` components, pages, auth and API helpers
-  - `.env` for `VITE_API_URL`
+**Backend**
+- Django 5  
+- Django REST Framework  
+- Django Channels (WebSockets)  
+- Channels-Redis  
+- Simple JWT  
+- Django CORS Headers  
 
-## Backend Overview
-- REST endpoints are under `chat/` prefix (see `chatapppoj/chatapppoj/urls.py`).
-- Auth: `rest_framework_simplejwt` with access/refresh tokens.
-- WebSocket endpoint (see `chatapp/routing.py`):
-  - `ws://<HOST>:<PORT>/ws/chat/<conversation_id>/?token=<JWT_ACCESS_TOKEN>`
-  - Token is verified in `ChatConsumer.connect`.
-- Channel layer: Redis at `127.0.0.1:6379` (see `settings.py`).
+**Frontend**
+- React (Vite)  
+- Axios  
 
-### Key Endpoints
-- `POST /chat/auth/register/` — create user
-- `POST /chat/auth/token/` — obtain JWT (username, password)
-- `POST /chat/auth/token/refresh/` — refresh access token
-- `GET /chat/users/` — list users (auth required)
-- `GET|POST /chat/conversations/` — list or create conversation (exactly two participants incl. self)
-- `GET|POST /chat/conversations/<id>/messages/` — list or create message in a conversation
-- `GET|DELETE /chat/conversations/<id>/messages/<pk>/` — retrieve or delete message (only sender can delete)
+**Realtime Transport**
+- Redis (Channel Layer)
 
-## Frontend Overview
-- `src/api.js` injects `Authorization: Bearer <access>` and uses `VITE_API_URL` (default http://127.0.0.1:8000).
-- `src/auth.js` manages token refresh and logout.
-- `src/components/Conversation.jsx` opens a WebSocket to the backend and handles:
-  - `chat_message` — append new message
-  - `typing` — show typing indicator
-  - `online_status` — track presence in the conversation room
+---
 
-## Requirements
-- Python 3.10+ (recommended)
-- Node.js 18+
-- Redis server (local) for channels layer
+## ✨ Features
+- 🔐 JWT Authentication (login, refresh)
+- 👤 User Management (register, list users)
+- 💬 Conversations (create, list)
+- 📩 Messages (send, list, delete own)
+- ⚡ Real-time WebSocket Chat (typing indicator & online status)
+- 🧠 Token-based access validation for WebSocket connections
 
-## Setup (Development)
+---
 
-### 1) Backend
+## 📁 Project Structure
+ChatApp/
+│
+├── chatapppoj/ # Django project root
+│ ├── chatapppoj/ # Project settings, ASGI, routing
+│ ├── chatapp/ # Core Django app (models, serializers, consumers, etc.)
+│ └── manage.py
+│
+├── frontend/ # React (Vite) frontend
+│ ├── src/ # Components, pages, API & auth helpers
+│ └── .env # API base URL (VITE_API_URL)
+│
+├── requirements.txt # Python dependencies
+├── README.md
+└── .gitignore
+
+## ⚙️ Backend Overview
+**Main Endpoints** (prefix: `/chat/`)
+| Method | Endpoint | Description |
+|:-------|:----------|:-------------|
+| POST | `/auth/register/` | Register a new user |
+| POST | `/auth/token/` | Obtain JWT access & refresh tokens |
+| POST | `/auth/token/refresh/` | Refresh access token |
+| GET | `/users/` | List all users (auth required) |
+| GET / POST | `/conversations/` | List or create a conversation (two participants) |
+| GET / POST | `/conversations/<id>/messages/` | List or send messages in a conversation |
+| DELETE | `/conversations/<id>/messages/<pk>/` | Delete your own message |
+
+**WebSocket Endpoint**
+ws://<HOST>:<PORT>/ws/chat/<conversation_id>/?token=<JWT_ACCESS_TOKEN>
+Token is validated inside `ChatConsumer.connect`.
+
+**Channel Layer:** Redis (`127.0.0.1:6379`)
+
+---
+
+## 🧩 Frontend Overview
+
+- `src/api.js` → Handles REST API requests with `Authorization: Bearer <access>` header.  
+- `src/auth.js` → Manages JWT token storage, refresh, and logout.  
+- `src/components/Conversation.jsx` → Manages WebSocket connection and handles:
+  - `chat_message` → Append new message
+  - `typing` → Display typing indicator
+  - `online_status` → Track online presence
+
+---
+
+## 🧱 Requirements
+
+- Python 3.10+  
+- Node.js 18+  
+- Redis (local instance for channel layer)
+
+---
+
+## 🧑‍💻 Setup (Development)
+### 1️⃣ Backend
 ```bash
-# from repository root
+# From repository root
 python -m venv .venv
-.venv\Scripts\activate  # Windows PowerShell: .\.venv\Scripts\Activate.ps1
+.venv\Scripts\activate     # PowerShell: .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 
-# Create DB and tables
+# Create database and apply migrations
 python chatapppoj/manage.py migrate
 
-# Create a superuser (optional)
+# (Optional) Create an admin user
 python chatapppoj/manage.py createsuperuser
 
-# Start Redis (ensure it runs on 127.0.0.1:6379)
-# Windows users: run Redis via Docker or a local install
+# Ensure Redis is running locally (127.0.0.1:6379)
 
-# Run the ASGI server (recommended for websockets)
+# Run ASGI server (required for WebSockets)
 python -m daphne -p 8000 chatapppoj.chatapppoj.asgi:application
-# Alternatively, for basic dev you can try
-python chatapppoj/manage.py runserver  # may not handle websockets fully without Daphne
-```
-
-### 2) Frontend
-```bash
-# from repository root
+# Alternatively:
+python chatapppoj/manage.py runserver
+### 2️⃣ frontend
 cd frontend
 npm install
-# optionally configure API base URL
+
+# Optionally set your backend API URL
 # echo VITE_API_URL=http://127.0.0.1:8000 > .env
+
 npm run dev
 ```
+## 🧑‍💻 Setup (Development)
 
-Open http://localhost:5173
+Backend SECRET_KEY is currently hardcoded (for demo).
+→ In production, load from environment variables and disable DEBUG.
 
-## Environment Configuration
-- Backend `SECRET_KEY` is currently hardcoded in settings for demo purposes. For production, load it from environment variables and disable `DEBUG`.
-- Frontend expects `VITE_API_URL` in `frontend/.env` (optional; defaults to http://127.0.0.1:8000).
+Frontend expects VITE_API_URL inside frontend/.env
+→ Defaults to http://127.0.0.1:8000 if not set.
 
-## Production Notes
-- Use a managed Redis instance for channels layer.
-- Serve ASGI via Daphne/Uvicorn behind a reverse proxy.
-- Configure CORS and allowed hosts.
-- Use a production-ready database (PostgreSQL, MySQL) instead of SQLite.
+## 🚀 Production Notes
 
-## License
-MIT (or your preferred license)
+Use a managed Redis instance for the Channels layer.
+
+Serve ASGI using Daphne or Uvicorn behind Nginx or another reverse proxy.
+
+Configure ALLOWED_HOSTS, CORS_ORIGIN_WHITELIST, and secure settings.
+
+Replace SQLite with PostgreSQL or MySQL.
+
+## 📄 License
+
+MIT License — feel free to use and modify for personal or educational projects.

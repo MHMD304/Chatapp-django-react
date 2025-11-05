@@ -34,6 +34,7 @@ A **real-time 1-to-1 chat application** built with **Django**, **Django REST Fra
 ---
 
 ## 📁 Project Structure
+```
 ChatApp/
 │
 ├── chatapppoj/ # Django project root
@@ -48,6 +49,7 @@ ChatApp/
 ├── requirements.txt # Python dependencies
 ├── README.md
 └── .gitignore
+```
 
 ## ⚙️ Backend Overview
 **Main Endpoints** (prefix: `/chat/`)
